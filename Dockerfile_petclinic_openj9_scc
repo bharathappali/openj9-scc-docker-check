@@ -1,0 +1,11 @@
+FROM adoptopenjdk:15-openj9
+
+RUN apt update \
+    && apt install -y git \
+    && mkdir -p app \
+    && cd app \
+    && git clone https://github.com/spring-projects/spring-petclinic.git \
+    && cd spring-petclinic \
+    && ./mvnw package
+
+CMD java -jar /app/spring-petclinic/target/*.jar
