@@ -10,7 +10,7 @@ echo "${SCC_SIZE}"
 echo ""
 
 echo -n "Starting petclinic with scc ... "
-container_one=$(docker run --rm --cpus 1 --m256m -p 10080:8080 -d sample-scc-petclinic)
+container_one=$(docker run --rm --cpus 1 -m256m -p 10080:8080 -d sample-scc-petclinic)
 echo "Done."
 echo ""
 
