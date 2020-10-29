@@ -10,12 +10,12 @@ echo "${SCC_SIZE}"
 echo ""
 
 echo -n "Starting petclinic with scc ... "
-container_one=$(docker run --rm --name="petclinic_with_scc" -p 10080:8080 -d sample-scc-petclinic)
+container_one=$(docker run --rm -p 10080:8080 -d sample-scc-petclinic)
 echo "Done."
 echo ""
 
 echo -n "Starting petclinic without scc ... "
-container_two=$(docker run --rm --name="petclinic_with_no_scc" -e OPENJ9_JAVA_OPTIONS="-Xshareclasses:none" -p 10081:8080 -d sample-scc-petclinic)
+container_two=$(docker run --rm -e OPENJ9_JAVA_OPTIONS="-Xshareclasses:none" -p 10081:8080 -d sample-scc-petclinic)
 echo "Done."
 echo ""
 container_one_status=$(curl -o /dev/null --silent --head --write-out '%{http_code}' http://localhost:10080)
@@ -33,15 +33,15 @@ done
 echo " Done."
 
 echo -n "Petclinic Startup with SCC : "
-STARTUP_WITH_SCC=$(docker logs petclinic_with_scc 2>&1 | grep "Started PetClinicApplication in" | cut -d ":" -f 4 | cut -d " " -f 5)
+STARTUP_WITH_SCC=$(docker logs "${container_one}" 2>&1 | grep "Started PetClinicApplication in" | cut -d ":" -f 4 | cut -d " " -f 5)
 echo "${STARTUP_WITH_SCC} seconds."
 
 
 echo -n "Petclinic Startup without SCC : "
-STARTUP_WITHOUT_SCC=$(docker logs petclinic_with_no_scc 2>&1 | grep "Started PetClinicApplication in" | cut -d ":" -f 4 | cut -d " " -f 5)
+STARTUP_WITHOUT_SCC=$(docker logs "${container_two}" 2>&1 | grep "Started PetClinicApplication in" | cut -d ":" -f 4 | cut -d " " -f 5)
 echo "${STARTUP_WITHOUT_SCC} seconds."
 
 echo -n "Cleaning Up container ... "
-docker stop petclinic_with_scc petclinic_with_no_scc 2>&1 > /dev/null
+docker stop "${container_one}" "${container_two}" 2>&1 > /dev/null
 echo "Done."
 
