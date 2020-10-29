@@ -10,12 +10,12 @@ echo "${SCC_SIZE}"
 echo ""
 
 echo -n "Starting petclinic with scc ... "
-container_one=$(docker run --rm -p 10080:8080 -d sample-scc-petclinic)
+container_one=$(docker run --rm --cpus 1 --m256m -p 10080:8080 -d sample-scc-petclinic)
 echo "Done."
 echo ""
 
 echo -n "Starting petclinic without scc ... "
-container_two=$(docker run --rm -e OPENJ9_JAVA_OPTIONS="-Xshareclasses:none" -p 10081:8080 -d sample-scc-petclinic)
+container_two=$(docker run --rm -e OPENJ9_JAVA_OPTIONS="-Xshareclasses:none" --cpus 1 -m256m -p 10081:8080 -d sample-scc-petclinic)
 echo "Done."
 echo ""
 container_one_status=$(curl -o /dev/null --silent --head --write-out '%{http_code}' http://localhost:10080)
