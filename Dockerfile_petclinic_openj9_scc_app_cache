@@ -1,0 +1,24 @@
+FROM adoptopenjdk:15-openj9
+
+RUN apt update \
+    && apt install -y git \
+    && mkdir -p app \
+    && cd app \
+    && git clone https://github.com/spring-projects/spring-petclinic.git \
+    && cd spring-petclinic \
+    && ./mvnw package
+
+RUN echo "Running 3 iterations to generate SCC"; \
+    SCC_GEN_RUNS_COUNT=3; \
+    for i in $(seq 0 $SCC_GEN_RUNS_COUNT); \
+    do \
+        java -Xshareclasses:name=openj9_system_scc,cacheDir=/opt/java/.scc,layer=1 -Xscmx40m -jar /app/spring-petclinic/target/*.jar & \
+        PID_LAUNCHED=$!; \
+        sleep 15; \
+        kill -9 $PID_LAUNCHED; \
+        sleep 5; \
+    done; \
+    \
+    echo "SCC gen completed"
+
+CMD java -jar /app/spring-petclinic/target/*.jar
